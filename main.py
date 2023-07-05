@@ -1,64 +1,57 @@
+import tkinter as tk
+
 extrato = 0
 depositos_feitos = 0
 saques_feitos = 0
 
-def depositar(): # Aqui o usuario deposita dinheiro
-    global extrato, depositos_feitos, saques_feitos
+def depositar():
+    global extrato, depositos_feitos
 
-    user_1 = float(input("Digite quanto deseja depositar.\n: ")) # O usuario fala o valor, logo após ele é adicionado ao extrato e começa a contação dos depositos.
+    user_1 = float(entry_valor.get())
     extrato += user_1
     depositos_feitos += 1
-    print(f"Foram depositados R${user_1} na sua conta, seu extrato agora é de R${extrato}")
-    user_2 = input("Deseja depositar novamente?\n(1) Sim\n(2) Não\n: ") # Aqui pergunta se o usuario quer fazer o deposito novamente.
-   
-    if depositos_feitos >= 3: # Caso o limite de depositos seja feito ele é impedido e o dinheiro não é depositado.
-        print("Limite de depósitos atingido, volte amanhã") 
-        return menu()
-    if user_2 == '1': # Aqui é caso ele vá executar dois depositos seguidos
-        depositar()
-        depositos_feitos += 1
-    elif user_2 == '2': # Aqui é caso o usuario não queria mais depositar 
-        print("Ok, o que deseja fazer agora?")
-        menu()
+    label_resultado["text"] = f"Foram depositados R${user_1} na sua conta. Seu extrato agora é de R${extrato}"
+    if depositos_feitos >= 3:
+        label_resultado["text"] = "Limite de depósitos atingido, volte amanhã"
 
-def sacar(): # Aqui o usuario saca o dinheiro
+def sacar():
     global extrato, saques_feitos
 
-    user_1 = float(input("Quanto deseja sacar?\n: ")) # Aqui o usuario digita quanto quer sacar
-    if saques_feitos == 3: 
-        print("Limite de saques atingido")
-        return menu()
+    user_1 = float(entry_valor.get())
     if user_1 > extrato:
-        print(f"Saldo indisponível, você possui {extrato}")
-        user_2 = float(input("Deseja sacar novamente?\n(1) Sim\n(2) Não\n: "))
-        if user_2 == 2:
-            return menu() 
-        else:
-            return sacar()
-
-    if user_1 < extrato:
-        saques_feitos+=1
-        print(saques_feitos)
+        label_resultado["text"] = f"Saldo indisponível, você possui R${extrato}"
+    else:
         extrato -= user_1
-        print(f"Você sacou {user_1}, seu saldo atual é {extrato}")
-        user_2 = float(input("Deseja sacar novamente?\n(1) Sim\n(2) Não\n: "))
-        if user_2 == 1:
-            return sacar()
-        else:
-            return menu()
+        label_resultado["text"] = f"Você sacou R${user_1}, seu saldo atual é de R${extrato}"
+        saques_feitos += 1
+        if saques_feitos >= 3:
+            label_resultado["text"] = "Limite de saques atingido"
 
+def exibir_extrato():
+    global extrato, depositos_feitos
+    label_resultado["text"] = f"Seu saldo é de R${extrato} e foram realizados hoje {depositos_feitos} depósitos e {saques_feitos} saques feitos."
 
+# Cria a janela principal
+janela = tk.Tk()
+janela.title("Sistema Bancário")
 
-def menu():
-    while True:
-        user = input("Bem vindo ao banco, o que deseja fazer?\n(1) Sacar\n(2) Depositar\n(3) Ver Extrato\n: ")
-        if user == '2':
-            depositar()
-        if user == '3':
-            print(f"Seu saldo é de R${extrato} e foram realizados hoje\n{depositos_feitos} depósitos.\n{saques_feitos} saques")
-        if user == '1':
-            sacar()
+# Cria os widgets da interface
+label_instrucao = tk.Label(janela, text="Bem-vindo ao banco. O que deseja fazer?")
+label_valor = tk.Label(janela, text="Valor:")
+entry_valor = tk.Entry(janela)
+button_depositar = tk.Button(janela, text="Depositar", command=depositar)
+button_sacar = tk.Button(janela, text="Sacar", command=sacar)
+button_extrato = tk.Button(janela, text="Ver Extrato", command=exibir_extrato)
+label_resultado = tk.Label(janela, text="")
 
+# Posiciona os widgets na janela
+label_instrucao.pack()
+label_valor.pack()
+entry_valor.pack()
+button_depositar.pack()
+button_sacar.pack()
+button_extrato.pack()
+label_resultado.pack()
 
-
-menu()
+# Inicia o loop de eventos da interface
+janela.mainloop()
